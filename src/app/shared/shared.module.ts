@@ -3,12 +3,33 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+// UI librairies
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { LayoutModule } from '@angular/cdk/layout';
 
+const COMMON = [    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,]
+const UIMODULES = [NgbModule, LayoutModule]
 
+// remove never later
+const COMPONENTS: never[] = []
+const DIRECTIVES: never[] = []
+const PIPES: never[] = []
+const DECLARE = [...COMPONENTS, ...DIRECTIVES, ...PIPES]
 @NgModule({
-  declarations: [],
+  declarations: DECLARE,
   imports: [
-    CommonModule
-  ]
+    ...COMMON,
+    ...UIMODULES,
+  ],
+  providers: [],
+  exports: [
+    ...COMMON,
+    ...COMPONENTS,
+    ...UIMODULES,
+    ...PIPES,
+  ],
 })
 export class SharedModule { }
