@@ -80,13 +80,14 @@ export class BreakpointsService {
 
   constructor(public breakpointObserver: BreakpointObserver) {
     const configs = Object.entries(this.configs)
-    const queryies = Object.values(this.configs).map((value) => value.query)
+    const queryies = Object.values(this.configs).map(value => value.query)
 
     this.breakpointObserver
       .observe(queryies)
       .subscribe((state: BreakpointState) => {
         configs.forEach(([key, value]) => {
-          this.breakpoints[key as keyof Breakpoint] = state.breakpoints[value.query]
+          this.breakpoints[key as keyof Breakpoint] =
+            state.breakpoints[value.query]
         })
         this.breakpointsSubject.next(this.breakpoints)
       })
