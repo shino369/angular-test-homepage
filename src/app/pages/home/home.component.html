@@ -1,4 +1,8 @@
-<div class="hideScroll">
+<div
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+  (touchmove)="$event.preventDefault()"
+  class="hideScroll">
   <section #one id="one" class="left">
     <div class="bg"></div>
     <div class="textWrapperL textWrapper">

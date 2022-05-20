@@ -18,43 +18,23 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators'
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  one: any
-  two: any
-  three: any
-  four: any
-  five: any
-  // debounceSub: Subscription = new Subscription()
-  // debounce$: BehaviorSubject<string> = new BehaviorSubject<string>('down')
-  // scroll$ = fromEvent<WheelEvent>(document, 'wheel')
-  //   .pipe(debounceTime(50))
-  //   .subscribe(event => {
-  //     event.preventDefault()
-  //     // console.log(event)
-  //     if (event.deltaY > 0) {
-  //       window.scrollTo(0, window.scrollY + window.innerHeight)
-  //     } else {
-  //       window.scrollTo(0, window.scrollY - window.innerHeight)
-  //     }
-  //   })
   constructor() {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    this.one = document.getElementById('one')
-    this.two = document.getElementById('two')
-    this.three = document.getElementById('three')
-    this.four = document.getElementById('four')
-    this.five = document.getElementById('five')
     this.parallax()
+    console.log(this.keyArr)
   }
 
+  keyArr: any = []
   parallax() {
     // Register the ScrollTrigger plugin with gsap
     gsap.registerPlugin(ScrollTrigger)
     //Loop over all the sections and set animations
     gsap.utils.toArray('section').forEach((section: any, i) => {
       // Set the bg variable for the section
+      this.keyArr.push(section)
       section.bg = section.querySelector('.bg')
       section.textWrapperL = section.querySelector('.textWrapperL')
       section.textWrapperR = section.querySelector('.textWrapperR')
@@ -93,7 +73,7 @@ export class HomeComponent implements OnInit {
             start: 'center bottom',
             end: 'center center',
             scrub: 1,
-            markers: true,
+            // markers: true,
           },
         })
       }
@@ -126,25 +106,12 @@ export class HomeComponent implements OnInit {
   private debouncedOnScroll = _.debounce(
     (deltaY: number) => {
       console.log(deltaY)
-      switch (round(window.scrollY / window.innerHeight)) {
-        case 0:
-          deltaY > 0 ? this.scroll(this.two) : undefined
-          break
-        case 1:
-          deltaY > 0 ? this.scroll(this.three) : this.scroll(this.one)
-          break
-        case 2:
-          deltaY > 0 ? this.scroll(this.four) : this.scroll(this.two)
-          break
-        case 3:
-          deltaY > 0 ? this.scroll(this.five) : this.scroll(this.three)
-          break
-        case 4:
-          deltaY > 0 ? this.scroll(this.one) : this.scroll(this.four)
-          break
-        default:
-          break
-      }
+      const offset = round(window.scrollY / window.innerHeight)
+      this.scroll(
+        deltaY > 0
+          ? this.keyArr[this.keyArr.length - 1 === offset ? 0 : offset + 1]
+          : this.keyArr[offset === 0 ? offset : offset - 1]
+      )
     },
     50,
     {}
@@ -154,34 +121,21 @@ export class HomeComponent implements OnInit {
   yAfter = 0
   yCurrent = 0
 
+  onTouchStart(event: any) {
+    this.yBefore = event.touches[0].clientY
+  }
+
+  onTouchEnd(event: any) {
+    this.yAfter = event.changedTouches[0].clientY
+    this.debouncedOnScroll(this.yBefore - this.yAfter)
+  }
+
   @HostListener('wheel', ['$event'])
-  @HostListener('touchmove', ['$event'])
-  @HostListener('touchstart', ['$event'])
-  @HostListener('touchend', ['$event'])
   onScroll(event: any) {
+    console.log(event.type)
     if (event.type === 'wheel') {
       event.preventDefault()
-      // if (event.deltaY > 0) {
-      //   window.scrollTo(0, window.scrollY + window.innerHeight)
-      // } else {
-      //   window.scrollTo(0, window.scrollY - window.innerHeight)
-      // }
-      // console.log('hi')
       this.debouncedOnScroll(event.deltaY)
-    }
-
-    if (event.type === 'touchmove') {
-      event.preventDefault()
-    }
-
-    // if event is touch
-    if (event.type === 'touchstart') {
-      this.yBefore = event.touches[0].clientY
-    }
-
-    if (event.type === 'touchend') {
-      this.yAfter = event.changedTouches[0].clientY
-      this.debouncedOnScroll(this.yBefore - this.yAfter)
     }
   }
 }
