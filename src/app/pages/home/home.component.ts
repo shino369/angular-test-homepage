@@ -1,15 +1,33 @@
-import { Component, HostListener, OnInit } from '@angular/core'
+import { Component, HostBinding, HostListener, OnInit } from '@angular/core'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
+import * as _ from 'lodash'
+import { BehaviorSubject, fromEvent, Subscription } from 'rxjs'
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators'
 
 @Component({
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  // debounceSub: Subscription = new Subscription()
+  // debounce$: BehaviorSubject<string> = new BehaviorSubject<string>('down')
+  // scroll$ = fromEvent<WheelEvent>(document, 'wheel')
+  //   .pipe(debounceTime(50))
+  //   .subscribe(event => {
+  //     event.preventDefault()
+  //     // console.log(event)
+  //     if (event.deltaY > 0) {
+  //       window.scrollTo(0, window.scrollY + window.innerHeight)
+  //     } else {
+  //       window.scrollTo(0, window.scrollY - window.innerHeight)
+  //     }
+  //   })
   constructor() {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
     this.parallax()
   }
 
@@ -86,14 +104,41 @@ export class HomeComponent implements OnInit {
     el.scrollIntoView({ block: 'start', behavior: 'smooth' })
   }
 
-  @HostListener('wheel', ['$event'])
+  private debouncedOnScroll = _.debounce(
+    (direction: string) =>
+      direction === 'down'
+        ? window.scrollTo(0, window.scrollY + window.innerHeight)
+        : window.scrollTo(0, window.scrollY - window.innerHeight),
+    20,
+    {}
+  )
+
+  yBefore = 0
+  yAfter = 0
+  yCurrent = 0
+
+  @HostListener('touchmove', ['$event'])
+  @HostListener('touchstart', ['$event'])
+  @HostListener('touchend', ['$event'])
   onScroll(event: any) {
-    event.preventDefault()
-    // if wheel down, scroll down 100vh
-    if (event.deltaY > 0) {
-      window.scrollTo(0, window.scrollY + window.innerHeight)
-    } else {
-      window.scrollTo(0, window.scrollY - window.innerHeight)
+    this.yCurrent = window.scrollY
+
+    if (event.type === 'touchmove') {
+      event.preventDefault()
+    }
+
+    // if event is touch
+    if (event.type === 'touchstart') {
+      this.yBefore = event.touches[0].clientY
+    }
+
+    if (event.type === 'touchend') {
+      this.yAfter = event.changedTouches[0].clientY
+      if (this.yAfter - this.yBefore < 0) {
+        window.scrollTo(0, window.scrollY + window.innerHeight)
+      } else {
+        window.scrollTo(0, window.scrollY - window.innerHeight)
+      }
     }
   }
 }
