@@ -3,42 +3,36 @@
   (touchend)="onTouchEnd($event)"
   (touchmove)="$event.preventDefault()"
   class="hideScroll">
-  <section #one id="one" class="left">
+  <section
+    #i
+    *ngFor="let item of [1, 2, 3, 4, 5, 6]; let i = index"
+    class="section"
+    [ngClass]="[i % 2 === 0 ? 'left' : 'right']">
     <div class="bg"></div>
-    <div class="textWrapperL textWrapper">
+    <div
+      class="textWrapper"
+      [ngClass]="[i % 2 === 0 ? 'textWrapperL' : 'textWrapperR']">
       <h1 class="text">hello world</h1>
     </div>
   </section>
-  <section #two id="two" class="right">
-    <div class="bg"></div>
-    <div class="textWrapperR textWrapper">
-      <h1 class="text">hello world</h1>
-    </div>
+  <!--
+  <section #two class="horizontal">
+    <section *ngFor="let item of [1, 2, 3]" class="panel">
+      <div class="bg"></div>
+    </section>
   </section>
-  <section #three id="three" class="left">
-    <div class="bg"></div>
-    <div class="textWrapperL textWrapper">
-      <h1 class="text">hello world</h1>
-    </div>
-  </section>
-  <section #four id="four" class="right">
-    <div class="bg"></div>
-    <div class="textWrapperR textWrapper">
-      <h1 class="text">hello world</h1>
-    </div>
-  </section>
-  <section #five id="five" class="left">
-    <div class="bg"></div>
-    <div class="textWrapperL textWrapper">
-      <h1 class="text">hello world</h1>
-    </div>
-  </section>
+  <section #three class="last bg-primary"></section>
+</div> -->
 </div>
-
 <div class="nav">
-  <div class="pointer my-2 border-bottom" (click)="scroll(one)">ONE</div>
-  <div class="pointer my-2 border-bottom" (click)="scroll(two)">TWO</div>
-  <div class="pointer my-2 border-bottom" (click)="scroll(three)">THREE</div>
-  <div class="pointer my-2 border-bottom" (click)="scroll(four)">FOUR</div>
-  <div class="pointer my-2 border-bottom" (click)="scroll(five)">FIVE</div>
+  <div class="nav-wrapper">
+    <div
+      *ngFor="let item of [1, 2, 3, 4, 5, 6]; let i = index"
+      class="pointer unselectable my-2"
+      (click)="scroll(keyArr[i]); activeSlide = i">
+      <div
+        class="dot"
+        [ngClass]="activeSlide === i ? 'active' : 'inactive'"></div>
+    </div>
+  </div>
 </div>
