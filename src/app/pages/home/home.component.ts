@@ -1,7 +1,15 @@
-import { Component, HostBinding, HostListener, OnInit } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 import * as _ from 'lodash'
+import { round } from 'lodash'
 import { BehaviorSubject, fromEvent, Subscription } from 'rxjs'
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators'
 
@@ -10,6 +18,11 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators'
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  one: any
+  two: any
+  three: any
+  four: any
+  five: any
   // debounceSub: Subscription = new Subscription()
   // debounce$: BehaviorSubject<string> = new BehaviorSubject<string>('down')
   // scroll$ = fromEvent<WheelEvent>(document, 'wheel')
@@ -28,6 +41,11 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
+    this.one = document.getElementById('one')
+    this.two = document.getElementById('two')
+    this.three = document.getElementById('three')
+    this.four = document.getElementById('four')
+    this.five = document.getElementById('five')
     this.parallax()
   }
 
@@ -50,6 +68,7 @@ export class HomeComponent implements OnInit {
       // Do the parallax effect on each section
       gsap.to(section.bg, {
         backgroundPosition: `50% ${innerHeight / 2}px`,
+        // y: '-10%',
         ease: 'none', // Don't apply any easing function.
         scrollTrigger: {
           // Trigger the animation as soon as the section comes into view
@@ -105,11 +124,29 @@ export class HomeComponent implements OnInit {
   }
 
   private debouncedOnScroll = _.debounce(
-    (direction: string) =>
-      direction === 'down'
-        ? window.scrollTo(0, window.scrollY + window.innerHeight)
-        : window.scrollTo(0, window.scrollY - window.innerHeight),
-    20,
+    (deltaY: number) => {
+      console.log(deltaY)
+      switch (round(window.scrollY / window.innerHeight)) {
+        case 0:
+          deltaY > 0 ? this.scroll(this.two) : undefined
+          break
+        case 1:
+          deltaY > 0 ? this.scroll(this.three) : this.scroll(this.one)
+          break
+        case 2:
+          deltaY > 0 ? this.scroll(this.four) : this.scroll(this.two)
+          break
+        case 3:
+          deltaY > 0 ? this.scroll(this.five) : this.scroll(this.three)
+          break
+        case 4:
+          deltaY > 0 ? this.scroll(this.one) : this.scroll(this.four)
+          break
+        default:
+          break
+      }
+    },
+    50,
     {}
   )
 
@@ -117,11 +154,21 @@ export class HomeComponent implements OnInit {
   yAfter = 0
   yCurrent = 0
 
+  @HostListener('wheel', ['$event'])
   @HostListener('touchmove', ['$event'])
   @HostListener('touchstart', ['$event'])
   @HostListener('touchend', ['$event'])
   onScroll(event: any) {
-    this.yCurrent = window.scrollY
+    if (event.type === 'wheel') {
+      event.preventDefault()
+      // if (event.deltaY > 0) {
+      //   window.scrollTo(0, window.scrollY + window.innerHeight)
+      // } else {
+      //   window.scrollTo(0, window.scrollY - window.innerHeight)
+      // }
+      // console.log('hi')
+      this.debouncedOnScroll(event.deltaY)
+    }
 
     if (event.type === 'touchmove') {
       event.preventDefault()
@@ -134,11 +181,7 @@ export class HomeComponent implements OnInit {
 
     if (event.type === 'touchend') {
       this.yAfter = event.changedTouches[0].clientY
-      if (this.yAfter - this.yBefore < 0) {
-        window.scrollTo(0, window.scrollY + window.innerHeight)
-      } else {
-        window.scrollTo(0, window.scrollY - window.innerHeight)
-      }
+      this.debouncedOnScroll(this.yBefore - this.yAfter)
     }
   }
 }
