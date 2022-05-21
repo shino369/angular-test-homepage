@@ -1,3 +1,20 @@
+@import '~bootstrap/scss/functions';
+
+// 2. Include any default variable overrides here
+// $page-width: 1280px;
+// $theme-colors: (
+//   'primary': $app-primary,
+//   'secondary': $background-secondary,
+//   'danger': $toast-error,
+//   'warning': $app-star,
+//   'dark': $app-black,
+// );
+// $body-bg: $app-primary;
+
+// 3. Include remainder of required Bootstrap stylesheets
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import './typology.scss';
 html,
 body {
     margin: 0 !important;

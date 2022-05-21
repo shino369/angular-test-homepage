@@ -1,7 +1,63 @@
 <div
-  (touchstart)="onTouchStart($event)"
-  (touchend)="onTouchEnd($event)"
-  (touchmove)="$event.preventDefault()"
+  [@loading]="loading"
+  class="loading"
+  (touchmove)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : $event.preventDefault()
+  "
+  (scroll)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : $event.preventDefault()
+  ">
+  <div class="d-flex w-100 h-100 justify-content-center align-items-center">
+    <div
+      class="d-flex justify-content-start w-100 px-4"
+      *ngIf="loading === 'true'">
+      <div class="wrapper">
+        <span class="box"></span><span class="hello">root@{{ OS }}: ~$</span
+        ><span class="hello-abs">root@{{ OS }}: ~$</span>
+      </div>
+      <div class="wrapper" style="padding-left: 1rem; color: white">
+        <div><span class="typing"></span><span class="cursor">_</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  (touchstart)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : onTouchStart($event)
+  "
+  (touchend)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : onTouchEnd($event)
+  "
+  (touchmove)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : $event.preventDefault()
+  "
+  (scroll)="
+    disableFullpage
+      ? loading === 'true'
+        ? $event.preventDefault()
+        : undefined
+      : $event.preventDefault()
+  "
   class="hideScroll">
   <section
     #i
@@ -10,20 +66,34 @@
     [ngClass]="[i % 2 === 0 ? 'left' : 'right']">
     <div class="bg"></div>
     <div
+      *ngIf="i > 0"
       class="textWrapper"
       [ngClass]="[i % 2 === 0 ? 'textWrapperL' : 'textWrapperR']">
-      <h1 class="text">hello world</h1>
+      <div>
+        <div class="text">
+          <p class="gs_reveal">
+            Lorem ipsum dolor sit amet, vim in labitur ornatus, pri ponderum
+            oporteat mediocrem ut. Cum id velit iracundia scripserit, eos at
+            vero dolor, vel viris prodesset ut. Ne sed quot habemus, has ei
+            prima eleifend consulatu, no vix summo regione forensibus.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="i === 0"
+      class="d-flex justify-content-center align-items-center w-100 quote-wrapper px-2">
+      <div class="quote">
+        <div class="big text-center pb-2 mb-2">IT'S NOT ABOUT IDEAS</div>
+        <div
+          *ngIf="breakpoints['md-up']"
+          class="custom-border mb-4 w-100"></div>
+        <div class="small text-center">IT'S ABOUT MAKING IDEAS HAPPEN</div>
+      </div>
     </div>
   </section>
-  <!--
-  <section #two class="horizontal">
-    <section *ngFor="let item of [1, 2, 3]" class="panel">
-      <div class="bg"></div>
-    </section>
-  </section>
-  <section #three class="last bg-primary"></section>
-</div> -->
 </div>
+
 <div class="nav">
   <div class="nav-wrapper">
     <div
@@ -36,3 +106,38 @@
     </div>
   </div>
 </div>
+
+<div class="top">
+  <div
+    [ngClass]="[visiblityState$.value === 'expand' ? 'active' : 'inactive']"
+    class="show-more pointer unselectable backdrop"
+    (click)="clickHidden()">
+    <img
+      [src]="'assets/icons/' + 'menu' + '.svg'"
+      style="mix-blend-mode: difference"
+      [width]="26"
+      [height]="26" />
+  </div>
+</div>
+
+<div
+  [@visibilityChanged]="visiblityState$.value"
+  [style]="
+    breakpoints['md-down']
+      ? 'transform-origin: top;   width: 100%;'
+      : 'transform-origin: left; max-width: 300px; min-width: 300px;  width: 25%;'
+  "
+  class="sidebar justify-content-center d-flex">
+  <div class="sticky-filter row">
+    <div class="select d-flex flex-column w-100">
+      <!--button for hiding search filter bar-->
+      <div class="header">ANTHONY WONG</div>
+      <span>test</span>
+    </div>
+  </div>
+</div>
+<div
+  *ngIf="!filterHidden"
+  class="pad"
+  id="pad"
+  (click)="!filterHidden ? clickHidden() : undefined"></div>
